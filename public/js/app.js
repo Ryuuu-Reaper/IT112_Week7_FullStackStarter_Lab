@@ -2,8 +2,6 @@ const contactForm = document.getElementById("contactForm");
 const contactRows = document.getElementById("contactRows");
 const messageRegion = document.getElementById("messageRegion");
 const userCount = document.getElementById("userCount");
-const apiStatus = document.getElementById("apiStatus");
-const apiIndicator = document.querySelector(".status-indicator");
 const saveButton = document.getElementById("saveButton");
 const cancelEditButton = document.getElementById("cancelEdit");
 const searchInput = document.getElementById("searchInput");
@@ -33,12 +31,6 @@ async function requestJson(url, options) {
   const data = await response.json();
   if (!response.ok) throw new Error(data.error || "The request could not be completed.");
   return data;
-}
-
-function setApiStatus(online) {
-  apiStatus.textContent = online ? "API connected" : "API unavailable";
-  apiIndicator.classList.toggle("online", online);
-  apiIndicator.classList.toggle("offline", !online);
 }
 
 function makeAction(label, className, handler, accessibleName) {
@@ -105,10 +97,8 @@ async function loadUsers() {
   try {
     const data = await requestJson("/api/users");
     users = data;
-    setApiStatus(true);
     renderUsers();
   } catch (error) {
-    setApiStatus(false);
     userCount.textContent = "!";
     const row = document.createElement("tr");
     const cell = document.createElement("td");
@@ -182,14 +172,4 @@ cancelEditButton.addEventListener("click", resetEditor);
 searchInput.addEventListener("input", renderUsers);
 document.getElementById("refreshButton").addEventListener("click", loadUsers);
 
-async function checkHealth() {
-  try {
-    await requestJson("/api/health");
-    setApiStatus(true);
-  } catch {
-    setApiStatus(false);
-  }
-}
-
 loadUsers();
-checkHealth();
